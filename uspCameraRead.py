@@ -9,6 +9,13 @@ cam=cv2.VideoCapture(1)  # 0, 1, or 2, depends on the port number camera uses. t
 #** resize the frame size
 # cam.set(cv2.CAP_PROP_FRAME_WIDTH, dispW)
 # cam.set(cv2.CAP_PROP_FRAME_HEIGHT, dispH)
+
+#** save videos --> saving happens within the while loop, please look for "save video", make sure that the path for folder exist
+#outVid=cv2.VideoWriter('folderVideo/myCam.avi',cv2.VideoWrite_fourcc(*'XVID'),21,(dispW,dispH)) #21 is frame rate
+
+#** READ from an existing video
+#cam=cv2.VideoCapture('folderVideo/myCam.avi')
+
 while True:
     ret, frame = cam.read()
     cv2.imshow('NameWindowPiCam', frame)
@@ -19,7 +26,12 @@ while True:
     #** resizing the images **
     #frameSmall=cv2.resize(frame,(320,240))
     #cv2.imshow('resizedImage',frameSmall)
+    #** SAVE VIDEO **
+    #outVid.write(frame)
     if cv2.waitKey(1)==ord('q'):
         break
 cam.release()
+
+#** SAVE VIDEO CLOSE
+#outVid.release()
 cv2.destroyAllWindows()
