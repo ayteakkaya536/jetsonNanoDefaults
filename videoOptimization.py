@@ -1,4 +1,4 @@
-#  !!!! NOT TESTED !!!
+#  !!!! TESTED WROKING !!!
 #copy of  'faceRecognizeKwonFaces.py' to optimize it
 ### !!! TEST RESULT 5-9 frame per second it doing okay with below size (frame factor 0.25) and code
 # XX python version 3.9
@@ -31,16 +31,16 @@ with open('train.pkl','rb') as f: #rb stands for raw bit
     Encodings=pickle.load(f)
 
 font=cv2.FONT_HERSHEY_SIMPLEX
-cam=cv2.VideoCapture(1)
+cam=cv2.VideoCapture(0)
 
 timeStamp=time.time()
 while True:
     _,frame=cam.read()
     frameSmall=cv2.resize(frame,(0,0),fx=scaleFactor,fy=scaleFactor) #.33 is decrease on size due to slow frame per second processing
-    frameRGB=cv2.cvtColor(frameSmall,cv2,COLOR_BGR2RGB)
+    frameRGB=cv2.cvtColor(frameSmall,cv2.COLOR_BGR2RGB)
     facePositions=face_recognition.face_locations(frameRGB,model='cnn')
     allEncodings=face_recognition.face_encodings(frameRGB,facePositions)
-    for (top,rigt,bottom,left), face_encoding in zip(facePositions, allEncodings):
+    for (top,right,bottom,left), face_encoding in zip(facePositions, allEncodings):
         name='Unknown Person'
         matches=face_recognition.compare_faces(Encodings,face_encoding)
         if True in matches:
@@ -50,7 +50,7 @@ while True:
         right=int(right/scaleFactor)
         bottom=int(bottom/scaleFactor)
         left=int(left/scaleFactor)
-        cv2.rectaangle(frame,(left,top),(right,bottom),(0,0,255),2)
+        cv2.rectangle(frame,(left,top),(right,bottom),(0,0,255),2)
         cv2.putText(frame,name,(left,top-6),font,.75,(0,0,255),2)
     ##################################
     dt=time.time()-timeStamp
@@ -63,7 +63,7 @@ while True:
     #############################
     cv2.imshow('Picture',frame)
     cv2.moveWindow('Picture',0,0)
-    if cv2.waitKey(1)==ord('q)'):
+    if cv2.waitKey(1)==ord('q'):
         break
 cam.release()
 cv2.destroyAllWindows()
