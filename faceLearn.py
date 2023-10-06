@@ -1,6 +1,10 @@
 #  !!!! NOT TESTED !!!
-# XX
-# XX
+# XX python version 3.9
+# pip --version
+# XX pip version 21.0.1
+# pip install --upgrade pip
+# pip install face-recognition
+# pip install opencv-python
 import face_recognition
 import cv2
 import os
