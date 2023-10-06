@@ -1,5 +1,12 @@
 //!!! NOT TESTTED !!
 //!! uses face recoctition library to deatct faces. Libraries must be installed on the OS (work space) first
+# XX python version 3.9
+# pip --version
+# XX pip version 21.0.1
+# pip install --upgrade pip
+# pip install face-recognition
+# pip install opencv-python
+
 import face_recognition
 import cv2
 print(cv2.__version__)
