@@ -1,19 +1,35 @@
-### Not TESTED WORKING on Jetson Yet####
-### ubuntu/jetpack 4.3 environment library setup
+### TESTED WORKING on Jetson NANO ####
 
-# $ cd ~
-# $ git clone https://github.com/yqlbu/face_recognizer
-# $ cd face_recognizer/
-# $ sudo chmod +x setup.sh
-# $ ./setup.sh
+### ubuntu/jetpack 4.3 environment library setup
+## details here https://forums.developer.nvidia.com/t/simple-accelerated-face-recognition/142679/19
+## install below dependencies
+# sudo apt-get install python3-pip
+# sudo apt-get install libjpeg-dev
+## install dlib libraries and build
+# sudo wget http://dlib.net/files/dlib-19.21.tar.bz2
+# sudo tar jxvf dlib-19.21.tar.bz2
+# sudo cd dlib-19.21/
+# sudo mkdir build
+# sudo cd build/
+# sudo cmake ..
+# sudo cmake --build .
+# sudo cd ../
+# sudo python3 setup.py install
+# sudo pip3 install face_recognition
+# sudo apt-get update
+# sudo reboot
+
+## !!! run with python3 !!!
 
 
 ## THIS DOES NOT TRAIN -- TRAIN THE PICfirst and save as train.pkl
 ## use the file windowsTrainSaveKnownFaces
 
-## FPS rate comes out as 0.1 running on my laptop
-## WATCH VIDEO 38 --> dlib libraries uses CUDA --> your code does not use GPU
+## CPU on WIN =  rate  0.1 FPS --> usb camera
+## GPU on JETSON =  rate  8 FPS -->usb camera
 
+## !!! improvement needed !!
+## camera view is cropped, show smaller. also delay
 
 
 import face_recognition
@@ -24,7 +40,7 @@ import time
 print(cv2.__version__)
 
 # fpsReport=0
-scaleFactor=.3
+scaleFactor=0.3
 
 Encodings=[]
 Names=[]
