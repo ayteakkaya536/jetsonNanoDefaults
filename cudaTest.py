@@ -10,9 +10,10 @@ else:
 
 import time
 
-matrix_size = 32*512 #firs number must be 32, which is batch size
+matrix_size = 32*32 #firs number must be 32, which is batch size
 x= torch.randn(matrix_size,matrix_size)
 y= torch.randn(matrix_size,matrix_size)
+print(type(x))
 
 print('*************CPU TIME ***********')
 start=time.time()
@@ -24,6 +25,7 @@ print('verify device',result.device)
 x_gpu=x.to(device)
 y_gpu=y.to(device)
 torch.cuda.synchronize()
+print(type(x_gpu))
 
 for i in range(3): #first time of GPU cal takes longer, we eant to see normal speed
     print('*************GPU TIME ***********')
