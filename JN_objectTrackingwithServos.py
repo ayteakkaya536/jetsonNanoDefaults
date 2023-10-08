@@ -1,3 +1,9 @@
+##  NOT TESTED  ################
+#################SERVO#####################################
+# sudo pip3 install adafruit-circuitpython-servokit 
+## must be run with python3, which has adafruit libraries, also openCV, numpy etc.. 
+## servos jitters if there is not ENOUGH power (even from power supply). 
+## while testing use only one servo at a time, or connect better power supply
 import cv2
 import numpy as np
 import time
