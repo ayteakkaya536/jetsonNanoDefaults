@@ -1,3 +1,4 @@
+## this code migth not be needed, since dlib libraries uses GPU directly
 ##!!! NOT TESTED !! ####
 # sudo apt-get update
 # sudo apt-get install git cmake libpython3-dev python3-numpy
