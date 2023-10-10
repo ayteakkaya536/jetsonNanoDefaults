@@ -1,4 +1,4 @@
-#  !!!! TESTED WROKING !!!
+#  !!!! TESTED WROKING !!! 
 #copy of  'faceRecognizeKwonFaces.py' to optimize it
 ### !!! TEST RESULT 5-9 frame per second it doing okay with below size (frame factor 0.25) and code
 # XX python version 3.9
