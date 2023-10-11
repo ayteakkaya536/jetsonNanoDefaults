@@ -1,5 +1,5 @@
 
-### NOT TESTED  on Jetson NANO ####
+### TESTED WORKS  on Jetson NANO ####
 
 ### ubuntu/jetpack 4.3 environment library setup
 ## details here https://forums.developer.nvidia.com/t/simple-accelerated-face-recognition/142679/19
@@ -32,12 +32,18 @@
 ## !!! improvement needed !!
 ## camera view is cropped, show smaller. also delay
 
-##  NOT TESTED  ################
+## TESTED WORKS  ################
 #################SERVO#####################################
 # sudo pip3 install adafruit-circuitpython-servokit 
 ## must be run with python3, which has adafruit libraries, also openCV, numpy etc.. 
 ## servos jitters if there is not ENOUGH power (even from power supply). 
 ## while testing use only one servo at a time, or connect better power supply
+
+
+### !!! IMPORVEMENT NEEDES !! ###
+## camera servo moves oppostie up/down --> correction needed
+## size of the frame needs adjustment
+## movement of the servos are not smooth
 
 
 import face_recognition
@@ -64,19 +70,21 @@ font=cv2.FONT_HERSHEY_SIMPLEX
 
 ## Servo intial setup
 kit=ServoKit(channels=16)
-tilt=45
+tilt=150
 pan=90
 kit.servo[0].angle=pan
 kit.servo[1].angle=tilt
 
 ## servo track function
-def servoTrack(left,top,right,bottom):
+def servoTrack(left,top,right,bottom,frame,width,height,pan,tilt):
     x = left
     y = top
     w = right - x
     h = bottom -y
+    
+    
     # if area>=50: # we will not use area, we will use names
-    cv2.rectangle(frame1,(x,y),(x+w,y+h),(0,255,255),3)
+    cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,255),3)
     # (left,top),(right, bottom)
     objX=x+w/2
     objY=y+h/2
@@ -111,7 +119,8 @@ def servoTrack(left,top,right,bottom):
 
 
 cam= cv2.VideoCapture(0) # 0 for built in camera, if USB change it to 1
-
+width=cam.get(cv2.CAP_PROP_FRAME_WIDTH)
+height=cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
 #FPS COUNT
 timeMark=time.time()
 fpsFilter=0
@@ -136,7 +145,7 @@ while True:
         cv2.rectangle(frame,(left,top),(right, bottom),(0,0,255),2)
         cv2.putText(frame,name,(left,top-6),font,.75,(0,0,255),2)
         if name == 'Unkown Person':
-            servoTrack(left,top,right,bottom)
+            servoTrack(left,top,right,bottom,frame,width,height,pan,tilt)
     
     # FPS TIME CALCUALATION
     dt=time.time()-timeMark
