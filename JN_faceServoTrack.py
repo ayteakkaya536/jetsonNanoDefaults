@@ -70,17 +70,18 @@ font=cv2.FONT_HERSHEY_SIMPLEX
 
 ## Servo intial setup
 kit=ServoKit(channels=16)
-tilt=150
+tilt=150  # this creates a problem when tilt is 180-tilt during first servoTrack at face detection
 pan=90
 kit.servo[0].angle=pan
 kit.servo[1].angle=tilt
 
 ## servo track function
+## !! improvement needed, tracking is not ideal, moving is not smooth, also tracking gets out of screen
 def servoTrack(left,top,right,bottom,frame,width,height,pan,tilt):
     x = left
     y = top
     w = right - x
-    h = y - bottom
+    h = y - bottom 
     
     
     # if area>=50: # we will not use area, we will use names
@@ -91,11 +92,11 @@ def servoTrack(left,top,right,bottom,frame,width,height,pan,tilt):
     errorPan=objX-width/2
     errorTilt= objY - height/2
 
-    if abs(errorPan)>15:
-        pan=pan-errorPan/75
+    if abs(errorPan)>10:
+        pan=pan-errorPan/50
 
-    if abs(errorTilt)>15:
-        tilt=tilt-errorTilt/75
+    if abs(errorTilt)>10:
+        tilt=tilt-errorTilt/50
 
     if pan>180:
         pan=180
@@ -114,7 +115,7 @@ def servoTrack(left,top,right,bottom,frame,width,height,pan,tilt):
         print("Tilt out of range")
         #print his on the screen not on the terminal
     kit.servo[0].angle=pan
-    kit.servo[1].angle=tilt
+    kit.servo[1].angle=180-tilt
     #break  # break alarms out in the 
 
 
@@ -163,4 +164,6 @@ while True:
 
 cam.release()
 cv2.destroyAllWindows()
+
+
 
