@@ -80,11 +80,11 @@ def servoTrack(left,top,right,bottom,frame,width,height,pan,tilt):
     x = left
     y = top
     w = right - x
-    h = bottom -y
+    h = y - bottom
     
     
     # if area>=50: # we will not use area, we will use names
-    cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,255),3)
+    cv2.rectangle(frame,(x,y),(x+w,y-h),(0,255,255),3)
     # (left,top),(right, bottom)
     objX=x+w/2
     objY=y+h/2
