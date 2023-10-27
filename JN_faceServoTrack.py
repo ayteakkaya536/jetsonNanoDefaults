@@ -44,6 +44,7 @@
 ## camera servo moves oppostie up/down --> correction needed
 ## size of the frame needs adjustment
 ## movement of the servos are not smooth
+## camera latency/delay -- >quite significant with PI camera
 
 
 import face_recognition
@@ -115,11 +116,17 @@ def servoTrack(left,top,right,bottom,frame,width,height,pan,tilt):
         print("Tilt out of range")
         #print his on the screen not on the terminal
     kit.servo[0].angle=pan
-    kit.servo[1].angle=180-tilt
+    kit.servo[1].angle=tilt  # up down is wrong - >180-tilt corrects it
     #break  # break alarms out in the 
 
-
-cam= cv2.VideoCapture(0) # 0 for built in camera, if USB change it to 1
+## USB CAMERA
+# cam= cv2.VideoCapture(0) # 0 for built in camera, if USB change it to 1
+## CSI PI CAMeRA
+dispW=640
+dispH=480
+flip=2
+camSet='nvarguscamerasrc !  video/x-raw(memory:NVMM), width=3264, height=2464, format=NV12, framerate=21/1 ! nvvidconv flip-method='+str(flip)+' ! video/x-raw, width='+str(dispW)+', height='+str(dispH)+', format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink'
+cam=cv2.VideoCapture(camSet)
 width=cam.get(cv2.CAP_PROP_FRAME_WIDTH)
 height=cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
 #FPS COUNT
@@ -164,6 +171,4 @@ while True:
 
 cam.release()
 cv2.destroyAllWindows()
-
-
 
