@@ -67,7 +67,16 @@ Encodings = []
 Names = []
 
 ## CAMERA SETTINGS
-cam = cv2.VideoCapture(0)  # 0 for built in camera, if USB change it to 1
+## USB
+# cam = cv2.VideoCapture(0)  # 0 for built in camera, if USB change it to 1
+## PI CSI Camera
+dispW=640
+dispH=480
+flip=2
+camSet='nvarguscamerasrc !  video/x-raw(memory:NVMM), width=3264, height=2464, format=NV12, framerate=21/1 ! nvvidconv flip-method='+str(flip)+' ! video/x-raw, width='+str(dispW)+', height='+str(dispH)+', format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink'
+# camSet='nvarguscamerasrc !  video/x-raw(memory:NVMM), width=1280, height=720, format=NV12, framerate=21/1 ! nvvidconv flip-method='+str(flip)+' ! video/x-raw, width='+str(dispW)+', height='+str(dispH)+', format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink'
+cam=cv2.VideoCapture(camSet)
+
 width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
 height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
 # FPS COUNT
@@ -84,8 +93,8 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 kit = ServoKit(channels=16)
 prevTiltAngle = 150  # this creates a problem when tilt is 180-tilt during first servoTrack at face detection
 prevPanAngle = 90
-kit.servo[0].angle = prevTiltAngle
-kit.servo[1].angle = prevPanAngle
+kit.servo[0].angle = prevPanAngle
+kit.servo[1].angle = prevTiltAngle
 
 ## camera Arduino Pi camera Angle of View: H=62.2 degree, V=48.8 degree, make the calculation of degrees by pixel
 ## pix per angle
@@ -126,7 +135,9 @@ def smooth(targetAngle, prevAngle, servoNumber):
 
 
 ## servo track function
-## !! improvement needed, tracking is not ideal, moving is not smooth, also tracking gets out of screen
+## !! improvement needed, tracking is not ideal, moving is not smooth, also tracking gets out of screen --> test teh smooth if works or not
+## !! servoTrackTilt check if the + sogn works, otherwise convert to - 
+
 def servoTrackPAN(left, top, right, bottom, width, height, prevPanAngle, prevTiltAngle):
     # cv2.rectangle(frame,(x,y),(x+w,y-h),(0,255,255),3)
     # (left,top),(right, bottom)
@@ -151,11 +162,15 @@ def servoTrackTILT(left, top, right, bottom, width, height, prevPanAngle, prevTi
         threadSmooth.start()
         prevTiltAngle = tiltAngle
     return prevTiltAngle
-
+##testig for and error
+_, frame = cam.read()
+time.sleep(10)
+print(' about to get into while loop')
 
 while True:
-
+    # try:
     _, frame = cam.read()
+    
     frameSmall = cv2.resize(frame, (0, 0), fx=scaleFactor, fy=scaleFactor)
     frameRGB = cv2.cvtColor(frameSmall, cv2.COLOR_BGR2RGB)
     facePositions = face_recognition.face_locations(frameRGB, model='cnn')
@@ -172,9 +187,9 @@ while True:
         left = int(left / scaleFactor)
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
         cv2.putText(frame, name, (left, top - 6), font, .75, (0, 0, 255), 2)
-        # if name == 'Unkown Person':
-        prevPanAngle = servoTrackPAN(left, top, right, bottom, width, height, prevPanAngle, prevTiltAngle)
-        prevTiltAngle = servoTrackTILT(left, top, right, bottom, width, height, prevPanAngle, prevTiltAngle)
+        if name == 'Unkown Person':
+            prevPanAngle = servoTrackPAN(left, top, right, bottom, width, height, prevPanAngle, prevTiltAngle)
+            prevTiltAngle = servoTrackTILT(left, top, right, bottom, width, height, prevPanAngle, prevTiltAngle)
 
     # FPS TIME CALCUALATION
     dt = time.time() - timeMark
@@ -187,6 +202,8 @@ while True:
     cv2.putText(frame, str(round(fpsFilter, 1)) + 'fps', (0, 25), font, .75, (0, 255, 255, 2))
     cv2.imshow('Picture', frame)
     cv2.moveWindow('Picture', 0, 0)
+    # except:
+    #     print('working in while loop, or somehting wrong')
     if cv2.waitKey(1) == ord('q'):
         break
 
