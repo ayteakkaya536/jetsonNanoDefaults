@@ -40,8 +40,9 @@
 
 
 ### !!! IMPORVEMENT NEEDES !! ###
+## code tested without activating the servos, servo get outs of position, postion calculation needs work
 ## camera servo moves oppostie up/down --> correction needed
-## size of the frame needs adjustment
+## 
 ## movement of the servos are not smooth
 
 
@@ -100,6 +101,9 @@ kit.servo[1].angle = prevTiltAngle
 ## pix per angle
 pixPerAngleX = width / 62.2
 pixPerAngleY = height / 48.8
+## TEST for angle calculation
+pixPerAngleX_W = dispW / 62.2
+pixPerAngleY_H= dispH / 48.8
 
 
 def calculatePixCoordinates(left, top, right, bottom, width, height):
@@ -119,18 +123,23 @@ targetAngle = None
 prevAngle = None
 
 
-def smooth(targetAngle, prevAngle, servoNumber):
+def smooth(targetAngle, prevAngle, servoNumber,servoName):
     #   // *** smoothing ***
     while abs(targetAngle - prevAngle) > 0.1:
         prevAngle = (targetAngle * 0.40) + (prevAngle * 0.60)
         outAngle = round(prevAngle, 2)
         #    *** end of smoothing ***
-        print(name + " Target Angle " + str(targetAngle) + " , Current Angle " + str(outAngle))
+        print(servoName + " Target Angle " + str(targetAngle) + " , Current Angle " + str(outAngle))
         # ********* servo angle out command **********
         if 1 < outAngle < 179:
-            kit.servo[servoNumber].angle = outAngle
+            # kit.servo[servoNumber].angle = outAngle
+            print(servoName + " moved to -- >")
         else:
             print("Out of servo range, servo stopped")
+            if outAngle>179:
+                outAngle=179
+            if outAngle<1:
+                outAngle=1
         time.sleep(0.05)
 
 
@@ -144,8 +153,11 @@ def servoTrackPAN(left, top, right, bottom, width, height, prevPanAngle, prevTil
     centerDiffX, centerDiffY = calculatePixCoordinates(left, top, right, bottom, width, height)
     if abs(centerDiffX) > 10:
         panAngle = prevPanAngle - centerDiffX / pixPerAngleX
+        ## TEST for angle calculation
+        panAngle_W = prevPanAngle - centerDiffX / pixPerAngleX_W
+        print("PAN angle ="+str(panAngle)+" PAN W = " + str(panAngle_W))
         panAngle = round(panAngle, 2)
-        threadSmooth=Thread(target=smooth,args=(panAngle, prevPanAngle, 'PAN '))
+        threadSmooth=Thread(target=smooth,args=(panAngle, prevPanAngle,0, 'PAN '))
         threadSmooth.daemon = True
         threadSmooth.start()
         prevPanAngle = panAngle
@@ -156,8 +168,13 @@ def servoTrackTILT(left, top, right, bottom, width, height, prevPanAngle, prevTi
     centerDiffX, centerDiffY = calculatePixCoordinates(left, top, right, bottom, width, height)
     if abs(centerDiffY) > 10:
         tiltAngle = prevTiltAngle + centerDiffY / pixPerAngleY
+        ## TEST for angle calculation
+        tiltAngle_H= prevTiltAngle + centerDiffY / pixPerAngleY_H
+        print("TILT angle ="+str(tiltAngle)+" TILT W = " + str(tiltAngle_H))
+
+
         tiltAngle = round(tiltAngle, 2)
-        threadSmooth=Thread(target=smooth,args=(tiltAngle, prevTiltAngle, 'TILT '))
+        threadSmooth=Thread(target=smooth,args=(tiltAngle, prevTiltAngle,1, 'TILT '))
         threadSmooth.daemon = True
         threadSmooth.start()
         prevTiltAngle = tiltAngle
